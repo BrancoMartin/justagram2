@@ -1,6 +1,6 @@
 # JustAgram
 
-**Instagram, but just the grams you want.**
+**Instagram, but *just a gram* at a time.**
 
 JustAgram is a distraction-free wrapper for Instagram designed to kill the doomscroll. It hides Reels, the Explore page, Stories, and the Home feed, leaving you with just your DMs, your profile, and the ability to post.
 
