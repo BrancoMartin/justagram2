@@ -2,12 +2,15 @@
 
 **Instagram, but just the grams you want.**
 
-JustAgram is a distraction-free wrapper for Instagram designed to kill the doomscroll. It aggressively hides Reels, the Explore page, Stories, and the algorithmic Home feed, leaving you with just your DMs, your profile, and the ability to post.
+JustAgram is a distraction-free wrapper for Instagram designed to kill the doomscroll. It hides Reels, the Explore page, Stories, and the Home feed, leaving you with just your DMs, your profile, and the ability to post.
 
-Why "JustAgram"? Because you should ideally use it *just a gram* at a time—not kilos of brain-rot content per hour. 😉
+Why "JustAgram"? Because you should ideally use it *just a gram* at a time, not kilos of brainrot content per hour. 😉
 
 ## 📥 Installation
-[**Download the latest APK from Releases**](../../releases)
+### Android:
+[**Download the latest APK from Releases**](../../releases) or build it yourself using the instructions below.
+### iOS:
+currently you can only build it yourself using the instructions below.
 
 ---
 
@@ -30,7 +33,10 @@ bun install
 # Sync web assets to native projects
 bun run sync
 
-# Build & Open
-bun run build:android
-bun run build:ios
+# Run on Android emulator/device
+bunx cap run android
+
+#Open native project in IDE
+bunx cap open android
+bunx cap open ios
 ```
