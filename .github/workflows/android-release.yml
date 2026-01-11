@@ -16,16 +16,16 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v4
 
-      # - name: Setup Bun
-      #   uses: oven-sh/setup-bun@v1
-      #   with:
-      #     bun-version: latest
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
 
-      # - name: Install dependencies
-      #   run: bun install
+      - name: Install dependencies
+        run: bun install
 
-      # - name: Sync Capacitor
-      #   run: bun run sync
+      - name: Sync Capacitor
+        run: bun run sync
 
       - name: Setup Java
         uses: actions/setup-java@v4
