@@ -6,6 +6,12 @@ JustAgram is a distraction-free wrapper for Instagram designed to kill the dooms
 
 Why "JustAgram"? Because you should ideally use it *just a gram* at a time, not kilos of brainrot content per hour. 😉
 
+## 📸 Screenshots
+<p align="center">
+  <img src="screenshots/feed.jpg" width="300" alt="Clean Feed">
+  <img src="screenshots/search.jpg" width="300" alt="Clean Search">
+</p>
+
 ## 📥 Installation
 ### Android:
 [**Download the latest APK from Releases**](../../releases) or build it yourself using the instructions below.
