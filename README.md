@@ -22,7 +22,9 @@ It injects a custom CSS stylesheet that visually hides specific UI elements (lik
 Built with **Bun** and **Vanilla JS**.
 
 ### Prerequisites
-- [Bun](https://bun.sh/)
+- npm or [Bun](https://bun.sh/) for package management
+- Node.js (for Capacitor CLI)
+- Android Studio (for Android development)
 - Xcode (for iOS development)
 
 ### Commands
