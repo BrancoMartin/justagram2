@@ -1,0 +1,36 @@
+# JustAgram
+
+**Instagram, but just the grams you want.**
+
+JustAgram is a distraction-free wrapper for Instagram designed to kill the doomscroll. It aggressively hides Reels, the Explore page, Stories, and the algorithmic Home feed, leaving you with just your DMs, your profile, and the ability to post.
+
+Why "JustAgram"? Because you should ideally use it *just a gram* at a time—not kilos of brain-rot content per hour. 😉
+
+## 📥 Installation
+[**Download the latest APK from Releases**](../../releases)
+
+---
+
+## 🛠 How It Works
+This application is a **CapacitorJS** container that loads the mobile Instagram website via `cordova-plugin-inappbrowser`.
+It injects a custom CSS stylesheet that visually hides specific UI elements (like the feed container `main div` and navigation tabs) without modifying the underlying Instagram API. This ensures a fast, cross-platform experience while respecting Instagram's security policies (CSP).
+
+## 💻 Development
+Built with **Bun** and **Vanilla JS**.
+
+### Prerequisites
+- [Bun](https://bun.sh/)
+- Xcode (for iOS development)
+
+### Commands
+```bash
+# Install dependencies
+bun install
+
+# Sync web assets to native projects
+bun run sync
+
+# Build & Open
+bun run build:android
+bun run build:ios
+```

@@ -1,0 +1,28 @@
+{
+  "name": "justagram",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "sync": "bunx cap sync",
+    "open:android": "bunx cap open android",
+    "open:ios": "bunx cap open ios",
+    "build:android": "bunx cap sync && bunx cap copy android && bunx cap open android",
+    "build:ios": "bunx cap sync && bunx cap copy ios && bunx cap open ios"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.0.0",
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^8.0.0",
+    "@capacitor/core": "^8.0.0",
+    "@capacitor/ios": "^8.0.0",
+    "@capacitor/status-bar": "^8.0.0",
+    "cordova-plugin-inappbrowser": "^6.0.0"
+  }
+}
