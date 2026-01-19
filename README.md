@@ -13,6 +13,9 @@ Why "JustAgram"? Because you should ideally use it *just a gram* at a time, not 
 </p>
 
 ## 📥 Installation
+If you find this useful, click ⭐ in the top-right of the page to support the project.
+
+[![GitHub stars](https://img.shields.io/github/stars/AlexMatter1512/justagram?style=social)](https://github.com/AlexMatter1512/justagram)
 ### Android:
 [**Download the latest APK from Releases**](../../releases) or build it yourself using the instructions below.
 ### iOS:
