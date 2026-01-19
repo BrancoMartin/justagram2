@@ -1,28 +1,28 @@
 /* Hide Reels tab */
 a[href="/reels/"],
 a[href*="reels"] {
-    display: none !important;
+  display: none !important;
 }
 
 /* Hide loading states */
 div[data-visualcompletion="loading-state"] {
-    display: none !important;
+  display: none !important;
 }
 
 /* Hide Stories bar - Instagram uses data-pagelet="story_tray" */
 div[data-pagelet="story_tray"] {
-    display: none !important;
+  display: none !important;
 }
 
 /* Hide Reels and Explore by SVG aria-label */
 svg[aria-label="Reels"],
-svg[aria-label*="Reels"]{
-    display: none !important;
+svg[aria-label*="Reels"] {
+  display: none !important;
 }
 
 /* Hide parent links containing Reels/Explore SVGs */
-a:has(svg[aria-label*="Reels"]){
-    display: none !important;
+a:has(svg[aria-label*="Reels"]) {
+  display: none !important;
 }
 
 /* Hide navigation items by common Instagram patterns */
@@ -31,17 +31,17 @@ nav a[href*="/reels/"],
 /* Target bottom navigation bar items */
 div[role="tablist"] a[href*="/reels/"],
 div[role="tablist"] a[href*="/explore/"] {
-    display: none !important;
+  display: none !important;
 }
 
 /* Hide Threads promotion link */
 a[href*="threads.com"] {
-    display: none !important;
+  display: none !important;
 }
 
 /* Hide main feed (home page feed container) */
 main div:has(> article) {
-    display: none !important;
+  display: none !important;
 }
 
 /* --- EXPLORE PAGE FIX (CSS Scoping) --- */
@@ -58,9 +58,13 @@ main div:has(> article) {
 body:has(input[placeholder="Search"]) a[href*="/p/"],
 body:has(input[aria-label="Search Input"]) a[href*="/p/"],
 body:has(input[type="search"]) a[href*="/p/"],
-
 body:has(input[placeholder="Search"]) a[href*="/reels/"],
 body:has(input[aria-label="Search Input"]) a[href*="/reels/"],
 body:has(input[type="search"]) a[href*="/reels/"] {
-    display: none !important;
+  display: none !important;
+}
+
+/* disable doom-scrolling on shared reels */
+div[data-reel-type="suggested"] {
+  display: none !important;
 }
