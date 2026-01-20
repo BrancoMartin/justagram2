@@ -11,7 +11,7 @@
         "@capacitor/core": "^8.0.0",
         "@capacitor/ios": "^8.0.0",
         "@capacitor/status-bar": "^8.0.0",
-        "cordova-plugin-inappbrowser": "^6.0.0",
+        "cordova-plugin-inappbrowser": "github:AlexMatter1512/cordova-plugin-inappbrowser",
       },
       "devDependencies": {
         "@types/bun": "latest",
@@ -232,7 +232,7 @@
 
     "conventional-commits-parser": ["conventional-commits-parser@3.2.4", "", { "dependencies": { "JSONStream": "^1.0.4", "is-text-path": "^1.0.1", "lodash": "^4.17.15", "meow": "^8.0.0", "split2": "^3.0.0", "through2": "^4.0.0" }, "bin": { "conventional-commits-parser": "cli.js" } }, "sha512-nK7sAtfi+QXbxHCYfhpZsfRtaitZLIA6889kFIouLvz6repszQDgxBu7wf2WbU+Dco7sAnNCJYERCwt54WPC2Q=="],
 
-    "cordova-plugin-inappbrowser": ["cordova-plugin-inappbrowser@6.0.0", "", {}, "sha512-nMJ67YQZwkx1WMfA4tKFdVdTg6FNkh/nQflP1uMw0RVe/cP2kfDrO3SbpUr8yKahpWdSQl1Lmd8D3KKzuAjucA=="],
+    "cordova-plugin-inappbrowser": ["cordova-plugin-inappbrowser@github:AlexMatter1512/cordova-plugin-inappbrowser#d5a9f0c", {}, "AlexMatter1512-cordova-plugin-inappbrowser-d5a9f0c"],
 
     "core-util-is": ["core-util-is@1.0.3", "", {}, "sha512-ZQBvi1DcpJ4GDqanjucZ2Hj3wEO5pZDS89BWbkcrvdxksJorwUDDZamX9ldFkp9aw2lmBDLgkObEA4DWNJ9FYQ=="],
 

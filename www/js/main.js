@@ -52,6 +52,13 @@ async function onDeviceReady() {
             } else {
                 console.error('[JustAgram] No CSS to inject!');
             }
+
+            // Try to inject script via new insertScript method (bypasses eval-based CSP)
+            browser.insertScript({
+                code: 'console.log("[JustAgram] insertScript test - CSP bypass successful!"); alert("Script injection worked!");'
+            }, function() {
+                console.log('[JustAgram] Script injected via insertScript');
+            });
         });
 
         // Handle errors
