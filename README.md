@@ -31,7 +31,7 @@ Currently you can only build it yourself using the instructions below.
 ---
 
 ## 🛠 How It Works
-This application is a **CapacitorJS** container that loads the mobile Instagram website via `cordova-plugin-inappbrowser`.
+This application is a **CapacitorJS** container that loads the mobile Instagram website via [my fork of `cordova-plugin-inappbrowser`](https://github.com/AlexMatter1512/cordova-plugin-inappbrowser) that enables script injection.
 
 It dynamically injects:
 1.  **Modular CSS:** Individual filter rules are loaded from `www/css/rules/` based on your settings.
