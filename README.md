@@ -8,9 +8,9 @@ Why "JustAgram"? Because you should ideally use it *just a gram* at a time, not 
 
 ## 📸 Screenshots
 <p align="center">
-  <img src="screenshots/feed.jpg" width="280" alt="Clean Feed">
-  <img src="screenshots/menu.jpg" width="280" alt="Settings Menu">
-  <img src="screenshots/search.jpg" width="280" alt="Clean Search">
+  <img src="screenshots/feed.jpg" width="180" alt="Clean Feed">
+  <img src="screenshots/menu.jpg" width="180" alt="Settings Menu">
+  <img src="screenshots/search.jpg" width="180" alt="Clean Search">
 </p>
 
 ## ✨ Features
