@@ -1,0 +1,3 @@
+a[href*="threads.com"] {
+  display: none !important;
+}
