@@ -1,0 +1,162 @@
+import type { Settings, CSSRules, JustagramData } from '../types';
+
+(function() {
+  'use strict';
+
+  console.log('[JustAgram] Menu script loaded.');
+
+  // Read data from global variable (injected by main app)
+  const data = window.__JUSTAGRAM_DATA__;
+
+  if (!data) {
+    console.error('[JustAgram] No data found! Menu cannot be initialized.');
+    return;
+  }
+
+  const cssRules = data.cssRules;
+  const menuButtonHTML = data.menuButtonHTML;
+  const menuHTML = data.menuHTML;
+
+  // Default settings (all hidden by default)
+  const defaultSettings: Settings = {
+    hideReels: true,
+    hideStories: true,
+    hideExplore: true,
+    hideFeed: true,
+    hideSuggestedReels: true,
+    hideThreads: true
+  };
+
+  // Save settings by sending message to main app
+  function saveSettings(settings: Settings): void {
+    try {
+      if (window.webkit?.messageHandlers?.cordova_iab) {
+        const message = JSON.stringify({
+          type: 'saveSettings',
+          payload: settings
+        });
+        window.webkit.messageHandlers.cordova_iab.postMessage(message);
+        console.log('[JustAgram] Settings saved to main app.');
+      } else {
+        console.warn('[JustAgram] Cannot save settings: message handler not found.');
+      }
+    } catch (e) {
+      console.error('[JustAgram] Failed to save settings:', e);
+    }
+  }
+
+  // Apply CSS rules based on settings
+  function applyStyles(settings: Settings): void {
+    const styleId = 'justagram-dynamic-styles';
+    const existingStyle = document.getElementById(styleId);
+    if (existingStyle) {
+      existingStyle.remove();
+    }
+
+    let css = '';
+    for (const key in settings) {
+      if (settings[key as keyof Settings] && cssRules[key as keyof Settings]) {
+        css += cssRules[key as keyof Settings] + '\n';
+      }
+    }
+
+    if (css) {
+      const style = document.createElement('style');
+      style.id = styleId;
+      style.textContent = css;
+      document.head.appendChild(style);
+    }
+  }
+
+  // Initialize menu
+  function initMenu(): void {
+    console.log('[JustAgram] Initializing menu...');
+
+    // Inject menu button
+    const btnContainer = document.createElement('div');
+    btnContainer.innerHTML = menuButtonHTML;
+    document.body.appendChild(btnContainer.firstElementChild as Node);
+
+    // Inject menu overlay
+    const menuContainer = document.createElement('div');
+    menuContainer.innerHTML = menuHTML;
+    document.body.appendChild(menuContainer.firstElementChild as Node);
+
+    // Use settings provided by main app
+    const settings = data.settings;
+    
+    const menuBtn = document.getElementById('justagram-menu-btn')!;
+    const menuOverlay = document.getElementById('justagram-menu-overlay')!;
+    const closeBtn = document.getElementById('justagram-close-btn')!;
+
+    // Open menu
+    menuBtn.addEventListener('click', function() {
+      (menuOverlay as HTMLElement).style.display = 'flex';
+    });
+
+    // Close menu
+    closeBtn.addEventListener('click', function() {
+      (menuOverlay as HTMLElement).style.display = 'none';
+    });
+
+    // Close on overlay click
+    menuOverlay.addEventListener('click', function(e: Event) {
+      if (e.target === menuOverlay) {
+        (menuOverlay as HTMLElement).style.display = 'none';
+      }
+    });
+
+    // Initialize toggles
+    const toggleItems = document.querySelectorAll('.justagram-toggle-item');
+    toggleItems.forEach(function(item) {
+      const key = item.getAttribute('data-key') as keyof Settings;
+      const slider = item.querySelector('.justagram-slider') as HTMLElement;
+
+      // Set initial state from saved settings
+      const isChecked = settings[key];
+      updateSliderStyle(slider, isChecked);
+
+      // Handle clicks on the entire toggle row
+      (item as HTMLElement).style.cursor = 'pointer';
+      item.addEventListener('click', function(e: Event) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        // Toggle the state
+        settings[key] = !settings[key];
+        console.log('[JustAgram] Toggle changed:', key, '->', settings[key]);
+
+        updateSliderStyle(slider, settings[key]);
+        saveSettings(settings);
+        applyStyles(settings);
+      });
+    });
+
+    // Apply initial styles
+    applyStyles(settings);
+    console.log('[JustAgram] Menu initialized.');
+  }
+
+  // Update slider visual style
+  function updateSliderStyle(slider: HTMLElement, isChecked: boolean): void {
+    if (isChecked) {
+      slider.style.backgroundColor = '#E1306C';
+      slider.innerHTML = '<span style="position:absolute;height:22px;width:22px;left:2px;bottom:3px;background-color:white;transition:.3s;border-radius:50%;transform:translateX(20px);"></span>';
+    } else {
+      slider.style.backgroundColor = '#363636';
+      slider.innerHTML = '<span style="position:absolute;height:22px;width:22px;left:2px;bottom:3px;background-color:white;transition:.3s;border-radius:50%;transform:translateX(0);"></span>';
+    }
+  }
+
+  // Also add base styles for loading states
+  const baseStyles = document.createElement('style');
+  baseStyles.textContent = 'div[data-visualcompletion="loading-state"]{display:none!important}';
+  document.head.appendChild(baseStyles);
+
+  // Run init
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initMenu);
+  } else {
+    initMenu();
+  }
+})();

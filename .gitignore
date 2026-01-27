@@ -6,6 +6,11 @@ out
 dist
 *.tgz
 
+# Build outputs (generated from src/)
+www/app/
+www/injected/
+www/index.html
+
 # code coverage
 coverage
 *.lcov
@@ -39,3 +44,4 @@ CLAUDE.md
 GEMINI.md
 android/.project
 android/app/.project
+.gemini-clipboard
