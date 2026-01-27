@@ -5,10 +5,6 @@ const config: CapacitorConfig = {
   appName: 'JustAgram',
   webDir: 'www',
   plugins: {
-    StatusBar: {
-      visible: true,
-      style: 'DARK'
-    },
     InAppBrowser: {
       allowedSchemes: ['http', 'https'],
       beforeload: 'yes'
