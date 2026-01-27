@@ -89,6 +89,38 @@ import type { Settings, CSSRules, JustagramData } from '../types';
     const menuOverlay = document.getElementById('justagram-menu-overlay')!;
     const closeBtn = document.getElementById('justagram-close-btn')!;
 
+    // Helper to toggle visibility based on URL
+    function updateButtonVisibility(url: string) {
+      if (url.includes('/accounts/settings/')) {
+        menuBtn.style.display = 'flex';
+      } else {
+        menuBtn.style.display = 'none';
+      }
+    }
+
+    // Handle clicks for navigation
+    document.addEventListener('click', function(e) {
+      // Find closest anchor tag
+      const target = (e.target as HTMLElement).closest('a');
+      if (target && target.href) {
+        // If it's a settings link, show button. Otherwise, if it's a navigation, hide it.
+        if (target.href.includes('/accounts/settings/')) {
+          menuBtn.style.display = 'flex';
+        } else {
+          // We assume any other link is a navigation away
+          menuBtn.style.display = 'none';
+        }
+      }
+    });
+
+    // Handle back/forward navigation
+    window.addEventListener('popstate', function() {
+      updateButtonVisibility(window.location.href);
+    });
+
+    // Check initial URL (in case we reload on the settings page)
+    updateButtonVisibility(window.location.href);
+
     // Open menu
     menuBtn.addEventListener('click', function() {
       (menuOverlay as HTMLElement).style.display = 'flex';
