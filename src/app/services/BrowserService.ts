@@ -1,19 +1,22 @@
-import type { JustagramData } from '../../types';
-import { AssetService } from './AssetService';
-import { SettingsService } from './SettingsService';
-import { ThemeService } from './ThemeService';
+import type { JustagramData, LoadedAssets } from "../../types";
+import { AssetService } from "./AssetService";
+import { SettingsService } from "./SettingsService";
+import { ThemeService } from "./ThemeService";
 
 export class BrowserService {
   private static browser: InAppBrowser | null = null;
   private static watchdogTimer: any = null;
   private static readonly WATCHDOG_TIMEOUT = 10000; // 10 seconds
 
-  private static readonly INSTAGRAM_URL = "https://www.instagram.com";
-  private static readonly BROWSER_OPTIONS = "location=no,zoom=no,toolbar=no,footer=no,hardwareback=yes,fullscreen=no";
+  private static readonly INSTAGRAM_URL = "https://www.instagram.com/direct";
+  private static readonly BROWSER_OPTIONS =
+    "location=no,zoom=no,toolbar=no,footer=no,hardwareback=yes,fullscreen=no";
 
-  public static async open(data: JustagramData | null): Promise<void> {
+  public static async open(data: LoadedAssets | null): Promise<void> {
     if (!cordova?.InAppBrowser) {
-      console.warn("[JustAgram] InAppBrowser not available. Opening in new tab.");
+      console.warn(
+        "[JustAgram] InAppBrowser not available. Opening in new tab."
+      );
       window.open(this.INSTAGRAM_URL, "_blank");
       return;
     }
@@ -36,7 +39,7 @@ export class BrowserService {
     this.stopWatchdog();
   }
 
-  private static setupEventListeners(data: JustagramData | null): void {
+  private static setupEventListeners(data: LoadedAssets | null): void {
     if (!this.browser) return;
 
     // Message listener
@@ -44,11 +47,14 @@ export class BrowserService {
       try {
         const message = event.data;
         if (message) {
-          if (message.type === 'saveSettings' && message.payload) {
+          if (message.type === "saveSettings" && message.payload) {
             SettingsService.save(message.payload);
-          } else if (message.type === 'updateBackgroundColor' && message.payload) {
+          } else if (
+            message.type === "updateBackgroundColor" &&
+            message.payload
+          ) {
             ThemeService.updateBackgroundColor(message.payload);
-          } else if (message.type === 'ping') {
+          } else if (message.type === "ping") {
             this.resetWatchdog();
           }
         }
@@ -64,15 +70,20 @@ export class BrowserService {
       console.log("[JustAgram] Page loaded (loadstop):", url);
 
       if (data) {
-        const dataScript = `window.__JUSTAGRAM_DATA__ = ${JSON.stringify(data)};`;
+        // Separate injected scripts from the data object to keep the page payload clean
+        const { injectedScripts, ...pageData } = data;
+
+        const dataScript = `window.__JUSTAGRAM_DATA__ = ${JSON.stringify(
+          pageData
+        )};`;
         this.browser?.insertScript({ code: dataScript }, () => {
           console.log("[JustAgram] Data injected successfully");
-          const addMenuJS = AssetService.getAddMenuJS();
-          if (addMenuJS) {
-            this.browser?.insertScript({ code: addMenuJS }, () => {
-              console.log("[JustAgram] Menu script injected successfully");
+
+          injectedScripts.forEach((script) => {
+            this.browser?.insertScript({ code: script }, () => {
+              console.log("[JustAgram] Injected script successfully");
             });
-          }
+          });
         });
       }
     };
@@ -114,8 +125,8 @@ export class BrowserService {
   private static restart(): void {
     this.close();
     // Re-open with freshly loaded assets (or cached ones)
-    AssetService.loadAssets().then(data => {
-        this.open(data);
+    AssetService.loadAssets().then((data) => {
+      this.open(data);
     });
   }
 }

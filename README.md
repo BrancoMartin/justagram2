@@ -51,10 +51,7 @@ Built with **Bun** and **TypeScript**.
 # Install dependencies
 bun install
 
-# Build TypeScript sources
-bun run build:ts
-
-# Build and copy all assets (HTML/CSS/JS) to www/
+# Build TypeScript sources, generate AssetManifest, and copy assets to www/
 bun run build
 
 # Sync web assets to native projects

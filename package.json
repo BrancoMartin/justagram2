@@ -5,14 +5,13 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "build:ts": "bun build src/app/main.ts --outdir www/app/js --sourcemap=external && bun build src/injected/ts/addmenu.ts --outdir www/injected/js --sourcemap=external",
-    "copy:assets": "mkdir -p www/app/css www/injected/html www/injected/css/rules && cp src/app/style.css www/app/css/ && cp -r src/injected/html/* www/injected/html/ && cp src/injected/css/rules/* www/injected/css/rules/ && cp src/app/index.html www/",
-    "build": "bun run build:ts && bun run copy:assets",
+    "build": "bun run scripts/build.ts",
     "sync": "bun run build && bunx cap sync",
     "open:android": "bunx cap open android",
     "open:ios": "bunx cap open ios",
     "build:android": "bun run sync && bunx cap copy android && bunx cap open android",
-    "build:ios": "bun run sync && bunx cap copy ios && bunx cap open ios"
+    "build:ios": "bun run sync && bunx cap copy ios && bunx cap open ios",
+    "run:android": "bun run sync && bunx cap copy android && bunx cap run android"
   },
   "devDependencies": {
     "@types/bun": "latest",

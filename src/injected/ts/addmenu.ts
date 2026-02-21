@@ -1,4 +1,4 @@
-import type { Settings, CSSRules, JustagramData } from '../types';
+import type { Settings, CSSRules, JustagramData } from '../../types';
 
 (function() {
   'use strict';
@@ -83,7 +83,7 @@ import type { Settings, CSSRules, JustagramData } from '../types';
     document.body.appendChild(menuContainer.firstElementChild as Node);
 
     // Use settings provided by main app
-    const settings = data.settings;
+    const settings = data?.settings;
     
     const menuBtn = document.getElementById('justagram-menu-btn')!;
     const menuOverlay = document.getElementById('justagram-menu-overlay')!;

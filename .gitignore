@@ -45,3 +45,4 @@ GEMINI.md
 android/.project
 android/app/.project
 .gemini-clipboard
+src/app/generated/

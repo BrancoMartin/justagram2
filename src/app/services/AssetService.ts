@@ -1,61 +1,52 @@
-import type { CSSRules, JustagramData, Settings } from '../../types';
-import { SettingsService } from './SettingsService';
+import type { CSSRules, JustagramData, LoadedAssets, Settings } from "../../types";
+import { SettingsService } from "./SettingsService";
+import { AssetManifest } from "../generated/AssetManifest";
 
 export class AssetService {
-  private static addMenuJS = "";
-
-  private static readonly CSS_RULES: (keyof Settings)[] = [
-    "hideReels",
-    "hideStories",
-    "hideExplore",
-    "hideFeed",
-    "hideSuggestedReels",
-    "hideThreads",
-  ];
-
-  public static getAddMenuJS(): string {
-    return this.addMenuJS;
-  }
-
-  public static async loadAssets(): Promise<JustagramData | null> {
+  public static async loadAssets(): Promise<LoadedAssets | null> {
     try {
       console.log("[JustAgram] Loading assets...");
 
-      // Load HTML and JS assets
-      const [menuBtnRes, menuRes, scriptRes] = await Promise.all([
-        fetch("injected/html/menuButton.html"),
-        fetch("injected/html/menu.html"),
-        fetch("injected/js/addmenu.js"),
+      // Load HTML templates
+      const htmlPromises = AssetManifest.htmlTemplates.map(async (fileName) => {
+        const res = await fetch(`injected/html/${fileName}`);
+        if (!res.ok) throw new Error(`Failed to load ${fileName}`);
+        return { name: fileName, content: await res.text() };
+      });
+
+      // Load Injected Scripts
+      const scriptPromises = AssetManifest.injectedScripts.map(async (fileName) => {
+        const res = await fetch(`injected/js/${fileName}`);
+        if (!res.ok) throw new Error(`Failed to load ${fileName}`);
+        return await res.text();
+      });
+
+      // Load CSS rules
+      const cssPromises = AssetManifest.cssRules.map(async (fileName) => {
+        const res = await fetch(`injected/css/rules/${fileName}`);
+        if (!res.ok) {
+           console.warn(`[JustAgram] Failed to load ${fileName}`);
+           return { name: fileName, content: "" };
+        }
+        return { name: fileName, content: await res.text() };
+      });
+
+      const [htmlFiles, scripts, cssFiles] = await Promise.all([
+        Promise.all(htmlPromises),
+        Promise.all(scriptPromises),
+        Promise.all(cssPromises),
       ]);
 
-      if (!menuBtnRes.ok || !menuRes.ok || !scriptRes.ok) {
-        throw new Error("Failed to load one or more assets");
-      }
-
-      const menuButtonHTML = await menuBtnRes.text();
-      const menuHTML = await menuRes.text();
-      this.addMenuJS = await scriptRes.text();
-
-      // Load CSS rule files in parallel
-      const cssResponses = await Promise.all(
-        this.CSS_RULES.map((name) => fetch(`injected/css/rules/${name}.css`))
-      );
+      // Map HTML to JustagramData properties
+      const menuHTML = htmlFiles.find((f) => f.name === "menu.html")?.content || "";
+      const menuButtonHTML = htmlFiles.find((f) => f.name === "menuButton.html")?.content || "";
 
       // Build cssRules object
       const cssRules: CSSRules = {} as CSSRules;
-      for (let i = 0; i < this.CSS_RULES.length; i++) {
-        const ruleName = this.CSS_RULES[i];
-        const response = cssResponses[i];
-
-        if (ruleName && response?.ok) {
-          cssRules[ruleName] = await response.text();
-        } else {
-          console.warn(`[JustAgram] Failed to load ${ruleName}.css`);
-          if (ruleName) {
-            cssRules[ruleName] = "";
-          }
-        }
-      }
+      cssFiles.forEach((file) => {
+        const key = file.name.replace('.css', '') as keyof Settings;
+        cssRules[key] = file.content;
+      });
 
       console.log("[JustAgram] Assets loaded successfully");
 
@@ -64,11 +55,13 @@ export class AssetService {
         menuHTML,
         cssRules,
         settings: SettingsService.load(),
+        injectedScripts: scripts,
       };
-
     } catch (e) {
       console.error("[JustAgram] Failed to load assets", e);
-      alert("Failed to load JustAgram assets. The app may not function correctly.");
+      alert(
+        "Failed to load JustAgram assets. The app may not function correctly."
+      );
       return null;
     }
   }

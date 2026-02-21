@@ -31,3 +31,11 @@ export type JustagramData = {
   cssRules: CSSRules;
   settings: Settings;
 };
+
+/**
+ * Internal type for all assets loaded by the app.
+ * Includes scripts that are injected separately and not part of the JSON payload.
+ */
+export type LoadedAssets = JustagramData & {
+  injectedScripts: string[];
+};
