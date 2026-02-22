@@ -30,4 +30,21 @@ export class ThemeService {
       StatusBar.setStyle({ style: Style.Dark }).catch(() => {}); // Light icons for dark bg
     }
   }
+
+  public static enableButtons(): void {
+    const buttons = document.querySelectorAll("#launch-btn");
+    buttons.forEach((btn) => {
+      (btn as HTMLButtonElement).disabled = false;
+    });
+
+    const spinner = document.querySelector(".spinner");
+    if (spinner) {
+      (spinner as HTMLElement).style.display = "none";
+    }
+
+    const p = document.querySelector("p");
+    if (p) {
+      p.innerText = "Ready to launch";
+    }
+  }
 }

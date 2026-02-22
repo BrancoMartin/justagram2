@@ -23,6 +23,14 @@ async function onDeviceReady(): Promise<void> {
   // Load assets (includes Settings loading)
   const data = await AssetService.loadAssets();
 
+  const launchBtn = document.getElementById("launch-btn");
+  if (launchBtn) {
+    launchBtn.addEventListener("click", () => {
+      BrowserService.open(data);
+    });
+  }
+
   // Open browser
   await BrowserService.open(data);
+  ThemeService.enableButtons();
 }

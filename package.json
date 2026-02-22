@@ -14,8 +14,13 @@
     "run:android": "bun run sync && bunx cap copy android && bunx cap run android"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@types/bun": "latest",
-    "@types/cordova": "^11.0.3"
+    "@types/cordova": "^11.0.3",
+    "eslint": "^10.0.1",
+    "globals": "^17.3.0",
+    "prettier": "^3.8.1",
+    "typescript-eslint": "^8.56.0"
   },
   "peerDependencies": {
     "typescript": "^5"

@@ -1,42 +1,123 @@
-function handleHome() {
-  const article = document.querySelector("article");
-  if (article) {
-    const div = article.closest("div");
-    if (div) {
-      div.remove();
-      console.log("[JustAgram] Removed div containing article on Home");
+interface JustagramBlockerAPI {
+  add: (substring: string) => void;
+  clear: () => void;
+  print: () => void;
+  isBlocked: (url: string) => boolean;
+}
+
+declare global {
+  interface Window {
+    JustagramBlocker?: JustagramBlockerAPI;
+  }
+}
+
+// --- Configuration Maps ---
+
+const blockMap: Record<string, string[]> = {
+  "/": ["graphql", "collection"],
+  // "/reels/": ["some-other-string"]
+};
+
+const domHandlerMap: Record<string, () => void> = {
+  "/": handleHome,
+  "/explore/": handleExplore,
+};
+
+// --- Helper Functions ---
+
+function getPathFromUrl(url?: string | URL | null): string {
+  if (!url) return window.location.pathname;
+  try {
+    return new URL(url.toString(), window.location.origin).pathname;
+  } catch {
+    return window.location.pathname;
+  }
+}
+
+function applyBlocksForPath(path: string) {
+  if (window.JustagramBlocker) {
+    window.JustagramBlocker.clear();
+
+    const substringsToBlock = blockMap[path] || [];
+    substringsToBlock.forEach(substring => {
+      window.JustagramBlocker!.add(substring);
+    });
+
+    if (substringsToBlock.length > 0) {
+      console.log(`[JustAgram] Applied blocks for ${path}:`, substringsToBlock);
     }
   }
 }
 
-function handleNavigation() {
-  const path = window.location.pathname;
-  console.log(`[JustAgram] Navigated to: ${path}`);
+// --- DOM Handlers ---
 
-  if (path === "/") {
-    // We might need to wait for content to load
-    setTimeout(handleHome, 1);
-    setTimeout(handleHome, 500);
-    setTimeout(handleHome, 1000);
+function handleHome() {
+  console.log("[JustAgram] Handling DOM for Home page");
+
+  try {
+    const main = document.querySelector("main");
+
+    if (main) {
+      main.replaceChildren(); // removes all child nodes
+      console.log("[JustAgram] Cleared all content inside <main>");
+    } else {
+      console.warn("[JustAgram] No <main> element found");
+    }
+
+  } catch (e) {
+    console.error("[JustAgram] Error handling Home page DOM", e);
   }
 }
 
-// Patch pushState
-const pushState = history.pushState;
-history.pushState = function (...args) {
-  pushState.apply(this, args);
-  handleNavigation();
+function handleExplore() {
+  console.log("[JustAgram] Handling DOM for Explore page");
+}
+
+function handleNavigation(path: string) {
+  const handler = domHandlerMap[path];
+  if (handler) {
+    handler();
+  }
+}
+
+// --- Core Routing Logic ---
+
+function processRoute(path: string, executeNavigation?: () => void) {
+  // 2. If no redirect, proceed normally
+  applyBlocksForPath(path);
+
+  // 3. Let the SPA finish its history update (if it triggered one)
+  if (executeNavigation) {
+    executeNavigation();
+  }
+
+  // 4. Update the DOM
+  handleNavigation(path);
+}
+
+// --- History Patches and Event Listeners ---
+
+const originalPushState = history.pushState;
+history.pushState = function(state, unused, url) {
+  const targetPath = getPathFromUrl(url);
+  processRoute(targetPath, () => {
+    originalPushState.apply(this, [state, unused, url]);
+  });
 };
 
-// Patch replaceState
-const replaceState = history.replaceState;
-history.replaceState = function (...args) {
-  replaceState.apply(this, args);
-  handleNavigation();
+const originalReplaceState = history.replaceState;
+history.replaceState = function(state, unused, url) {
+  const targetPath = getPathFromUrl(url);
+  processRoute(targetPath, () => {
+    originalReplaceState.apply(this, [state, unused, url]);
+  });
 };
 
-// Back/forward navigation
-window.addEventListener("popstate", handleNavigation);
+window.addEventListener("popstate", () => {
+  processRoute(window.location.pathname);
+});
 
-// Initial load
-handleNavigation();
+// Initial load check
+setTimeout(() => {
+  processRoute(window.location.pathname);
+}, 50);
