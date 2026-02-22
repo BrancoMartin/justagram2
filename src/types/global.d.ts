@@ -44,6 +44,14 @@ declare global {
         };
       };
     };
+    JustagramBlocker: JustagramBlockerAPI;
+  }
+
+  interface JustagramBlockerAPI {
+    add: (substring: string) => void;
+    clear: () => void;
+    print: () => void;
+    isBlocked: (url: string) => boolean;
   }
 
   /** Apache Cordova instance */

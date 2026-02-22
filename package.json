@@ -11,7 +11,10 @@
     "open:ios": "bunx cap open ios",
     "build:android": "bun run sync && bunx cap copy android && bunx cap open android",
     "build:ios": "bun run sync && bunx cap copy ios && bunx cap open ios",
-    "run:android": "bun run sync && bunx cap copy android && bunx cap run android"
+    "run:android": "bun run sync && bunx cap copy android && bunx cap run android",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "check": "npm run typecheck && npm run lint"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

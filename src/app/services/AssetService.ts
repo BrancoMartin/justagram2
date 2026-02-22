@@ -1,4 +1,4 @@
-import type { CSSRules, JustagramData, LoadedAssets, Settings } from "../../types";
+import type { CSSRules, LoadedAssets, Settings } from "../../types";
 import { SettingsService } from "./SettingsService";
 import { AssetManifest } from "../generated/AssetManifest";
 

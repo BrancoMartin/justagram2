@@ -1,4 +1,3 @@
-/// <reference path="../types/global.d.ts" />
 
 import { AssetService } from './services/AssetService';
 import { BrowserService } from './services/BrowserService';

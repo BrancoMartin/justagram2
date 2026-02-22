@@ -1,4 +1,4 @@
-import type { Settings, CSSRules, JustagramData } from '../../types';
+import type { Settings } from '../../types';
 
 (function() {
   'use strict';
@@ -125,9 +125,9 @@ import type { Settings, CSSRules, JustagramData } from '../../types';
     function rgbToHex(rgb: string): string {
       const result = rgb.match(/\d+/g);
       if (!result || result.length < 3) return '#000000';
-      const r = parseInt(result[0]);
-      const g = parseInt(result[1]);
-      const b = parseInt(result[2]);
+      const r = parseInt(result[0] || '0');
+      const g = parseInt(result[1] || '0');
+      const b = parseInt(result[2] || '0');
       return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
     }
 
@@ -191,7 +191,8 @@ import type { Settings, CSSRules, JustagramData } from '../../types';
       const slider = item.querySelector('.justagram-slider') as HTMLElement;
 
       // Set initial state from saved settings
-      const isChecked = settings[key];
+      const currentSettings = settings || defaultSettings;
+      const isChecked = currentSettings[key];
       updateSliderStyle(slider, isChecked);
 
       // Handle clicks on the entire toggle row
@@ -201,17 +202,17 @@ import type { Settings, CSSRules, JustagramData } from '../../types';
         e.stopPropagation();
 
         // Toggle the state
-        settings[key] = !settings[key];
-        console.log('[JustAgram] Toggle changed:', key, '->', settings[key]);
+        currentSettings[key] = !currentSettings[key];
+        console.log('[JustAgram] Toggle changed:', key, '->', currentSettings[key]);
 
-        updateSliderStyle(slider, settings[key]);
-        saveSettings(settings);
-        applyStyles(settings);
+        updateSliderStyle(slider, currentSettings[key]);
+        saveSettings(currentSettings);
+        applyStyles(currentSettings);
       });
     });
 
     // Apply initial styles
-    applyStyles(settings);
+    applyStyles(settings || defaultSettings);
     console.log('[JustAgram] Menu initialized.');
   }
 

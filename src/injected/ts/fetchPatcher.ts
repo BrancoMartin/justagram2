@@ -1,18 +1,4 @@
 
-// Define the global interface
-interface JustagramBlockerAPI {
-  add: (substring: string) => void;
-  clear: () => void;
-  print: () => void;
-  isBlocked: (url: string) => boolean;
-}
-
-declare global {
-  interface Window {
-    JustagramBlocker: JustagramBlockerAPI;
-  }
-}
-
 (function() {
   const originalFetch = window.fetch;
   const originalXHROpen = window.XMLHttpRequest.prototype.open;
@@ -59,7 +45,8 @@ declare global {
   }
 
   // Patch fetch
-  window.fetch = async function (input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
+  window.fetch = async function (...args: [RequestInfo | URL, RequestInit?]): Promise<Response> {
+    const [input] = args;
     let url = '';
     if (typeof input === 'string') {
       url = input;
@@ -73,18 +60,22 @@ declare global {
       return createErrorResponse(url);
     }
 
-    return originalFetch.apply(this, arguments as any);
-  };
+    return originalFetch.apply(window, args as any);
+  } as any; // Cast to any to satisfy the typeof fetch signature (including static methods)
 
   // Patch XHR Open
-  window.XMLHttpRequest.prototype.open = function (method: string, url: string | URL) {
-    // Store URL on the XHR instance for checking in send()
-    (this as any)._url = url.toString();
-    return originalXHROpen.apply(this, arguments as any);
+  window.XMLHttpRequest.prototype.open = function (...args: any[]) {
+    // args[1] is the URL
+    const url = args[1];
+    if (url) {
+        // Store URL on the XHR instance for checking in send()
+        (this as any)._url = url.toString();
+    }
+    return originalXHROpen.apply(this, args as any);
   };
   
   // Patch XHR Send
-  window.XMLHttpRequest.prototype.send = function (body?: Document | XMLHttpRequestBodyInit | null) {
+  window.XMLHttpRequest.prototype.send = function (...args: any[]) {
     const url = (this as any)._url;
     if (url && window.JustagramBlocker.isBlocked(url)) {
        console.log('[JustAgram] 🛑 Blocked XHR:', url);
@@ -99,12 +90,12 @@ declare global {
        // Trigger events
        setTimeout(() => {
          if (this.onreadystatechange) this.onreadystatechange(new Event('readystatechange'));
-         if (this.onload) this.onload(new Event('load'));
+         if (this.onload) this.onload(new ProgressEvent('load'));
        }, 0);
        
        return;
     }
-    return originalXHRSend.apply(this, arguments as any);
+    return originalXHRSend.apply(this, args as any);
   };
 
   console.log('[JustAgram] 🛡️ Dynamic Fetch Patcher Active');

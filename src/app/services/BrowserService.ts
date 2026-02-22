@@ -157,8 +157,8 @@ export class BrowserService {
     AssetService.loadAssets().then((data) => {
       if (data) {
         this.injectData(data);
-        data.injectedScripts.foreach((script) => {
-          this.injectscript(script);
+        data.injectedScripts.forEach((script: string) => {
+          this.injectScript(script);
         });
       }
     });

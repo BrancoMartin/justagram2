@@ -1,16 +1,3 @@
-interface JustagramBlockerAPI {
-  add: (substring: string) => void;
-  clear: () => void;
-  print: () => void;
-  isBlocked: (url: string) => boolean;
-}
-
-declare global {
-  interface Window {
-    JustagramBlocker?: JustagramBlockerAPI;
-  }
-}
-
 // --- Configuration Maps ---
 
 const blockMap: Record<string, string[]> = {
