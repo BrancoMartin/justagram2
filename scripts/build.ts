@@ -1,5 +1,6 @@
 import { readdir, mkdir } from "node:fs/promises";
 import { join, basename, relative } from "node:path";
+import packageJson from "../package.json";
 
 const SRC_DIR = "src";
 const WWW_DIR = "www";
@@ -22,10 +23,12 @@ async function build() {
   const cssRules = await getFiles(join(INJECTED_DIR, "css", "rules"), ".css");
   const htmlTemplates = await getFiles(join(INJECTED_DIR, "html"), ".html");
   const injectedScripts = await getFiles(join(INJECTED_DIR, "ts"), ".ts");
+  const dataFiles = await getFiles(join(INJECTED_DIR, "data"), ".json");
 
   console.log(`Found ${cssRules.length} CSS rules`);
   console.log(`Found ${htmlTemplates.length} HTML templates`);
   console.log(`Found ${injectedScripts.length} Injected scripts`);
+  console.log(`Found ${dataFiles.length} Data files`);
 
   // 2. Generate Manifest
   const manifestContent = `
@@ -36,6 +39,7 @@ export const AssetManifest = {
   cssRules: ${JSON.stringify(cssRules)},
   htmlTemplates: ${JSON.stringify(htmlTemplates)},
   injectedScripts: ${JSON.stringify(injectedScripts.map(f => f.replace('.ts', '.js')))},
+  dataFiles: ${JSON.stringify(dataFiles)},
 };
 `;
 
@@ -43,12 +47,17 @@ export const AssetManifest = {
   await Bun.write(join(APP_DIR, "generated", "AssetManifest.ts"), manifestContent);
   console.log("✅ Generated AssetManifest.ts");
 
+  const version = packageJson.version;
+  await Bun.write(join(APP_DIR, "generated", "Version.ts"), `export const AppVersion = "${version}";`);
+  console.log(`✅ Generated Version.ts (${version})`);
+
   // 3. Clean & Prepare WWW
   await mkdir(join(WWW_DIR, "app", "js"), { recursive: true });
   await mkdir(join(WWW_DIR, "app", "css"), { recursive: true });
   await mkdir(join(WWW_DIR, "injected", "js"), { recursive: true });
   await mkdir(join(WWW_DIR, "injected", "css", "rules"), { recursive: true });
   await mkdir(join(WWW_DIR, "injected", "html"), { recursive: true });
+  await mkdir(join(WWW_DIR, "injected", "data"), { recursive: true });
 
   // 4. Build App
   console.log("📦 Bundling App...");
@@ -65,6 +74,7 @@ export const AssetManifest = {
       await Bun.build({
         entrypoints: injectedScripts.map(f => join(INJECTED_DIR, "ts", f)),
         outdir: join(WWW_DIR, "injected", "js"),
+        root: join(INJECTED_DIR, "ts"),
         sourcemap: "external",
         minify: false, 
       });
@@ -90,6 +100,14 @@ export const AssetManifest = {
     await Bun.write(
       join(WWW_DIR, "injected", "css", "rules", css),
       Bun.file(join(INJECTED_DIR, "css", "rules", css))
+    );
+  }
+
+  // Injected Data
+  for (const file of dataFiles) {
+    await Bun.write(
+      join(WWW_DIR, "injected", "data", file),
+      Bun.file(join(INJECTED_DIR, "data", file))
     );
   }
 

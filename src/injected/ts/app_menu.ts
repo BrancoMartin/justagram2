@@ -13,7 +13,6 @@ import type { Settings } from '../../types';
     return;
   }
 
-  const cssRules = data.cssRules;
   const menuButtonHTML = data.menuButtonHTML;
   const menuHTML = data.menuHTML;
 
@@ -45,28 +44,7 @@ import type { Settings } from '../../types';
     }
   }
 
-  // Apply CSS rules based on settings
-  function applyStyles(settings: Settings): void {
-    const styleId = 'justagram-dynamic-styles';
-    const existingStyle = document.getElementById(styleId);
-    if (existingStyle) {
-      existingStyle.remove();
-    }
 
-    let css = '';
-    for (const key in settings) {
-      if (settings[key as keyof Settings] && cssRules[key as keyof Settings]) {
-        css += cssRules[key as keyof Settings] + '\n';
-      }
-    }
-
-    if (css) {
-      const style = document.createElement('style');
-      style.id = styleId;
-      style.textContent = css;
-      document.head.appendChild(style);
-    }
-  }
 
   // Initialize menu
   function initMenu(): void {
@@ -81,6 +59,12 @@ import type { Settings } from '../../types';
     const menuContainer = document.createElement('div');
     menuContainer.innerHTML = menuHTML;
     document.body.appendChild(menuContainer.firstElementChild as Node);
+
+    // Update version
+    const versionSpan = document.getElementById('jg-version');
+    if (versionSpan && data?.version) {
+      versionSpan.textContent = `v${data.version}`;
+    }
 
     // Use settings provided by main app
     const settings = data?.settings;
@@ -121,51 +105,7 @@ import type { Settings } from '../../types';
     // Check initial URL (in case we reload on the settings page)
     updateButtonVisibility(window.location.href);
 
-    // RGB to Hex helper
-    function rgbToHex(rgb: string): string {
-      const result = rgb.match(/\d+/g);
-      if (!result || result.length < 3) return '#000000';
-      const r = parseInt(result[0] || '0');
-      const g = parseInt(result[1] || '0');
-      const b = parseInt(result[2] || '0');
-      return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
-    }
 
-    // Check and update status bar color
-    let lastColor = '';
-    function updateStatusBarColor() {
-      const mainEl = document.querySelector('main') || document.body;
-      if (mainEl) {
-        const style = window.getComputedStyle(mainEl);
-        const bgColor = style.backgroundColor;
-        
-        // Convert to hex
-        const hexColor = rgbToHex(bgColor);
-
-        // Only send if changed
-        if (hexColor !== lastColor) {
-          lastColor = hexColor;
-          if (window.webkit?.messageHandlers?.cordova_iab) {
-            const message = JSON.stringify({
-              type: 'updateBackgroundColor',
-              payload: hexColor
-            });
-            window.webkit.messageHandlers.cordova_iab.postMessage(message);
-          }
-        }
-      }
-    }
-
-    // Run immediately and then every 2 seconds
-    updateStatusBarColor();
-    setInterval(updateStatusBarColor, 2000);
-
-    // Send ping every 5 seconds to keep the session alive
-    setInterval(() => {
-      if (window.webkit?.messageHandlers?.cordova_iab) {
-        window.webkit.messageHandlers.cordova_iab.postMessage(JSON.stringify({ type: 'ping' }));
-      }
-    }, 5000);
 
     // Open menu
     menuBtn.addEventListener('click', function() {
@@ -207,12 +147,10 @@ import type { Settings } from '../../types';
 
         updateSliderStyle(slider, currentSettings[key]);
         saveSettings(currentSettings);
-        applyStyles(currentSettings);
+        window.dispatchEvent(new CustomEvent('justagram-settings-changed', { detail: currentSettings }));
       });
     });
 
-    // Apply initial styles
-    applyStyles(settings || defaultSettings);
     console.log('[JustAgram] Menu initialized.');
   }
 
@@ -227,10 +165,7 @@ import type { Settings } from '../../types';
     }
   }
 
-  // Also add base styles for loading states
-  const baseStyles = document.createElement('style');
-  baseStyles.textContent = 'div[data-visualcompletion="loading-state"]{display:none!important}';
-  document.head.appendChild(baseStyles);
+
 
   // Run init
   if (document.readyState === 'loading') {

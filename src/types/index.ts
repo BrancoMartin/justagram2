@@ -30,6 +30,8 @@ export type JustagramData = {
   menuHTML: string;
   cssRules: CSSRules;
   settings: Settings;
+  blockMap: Record<string, string[]>;
+  version: string;
 };
 
 /**

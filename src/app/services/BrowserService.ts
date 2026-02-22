@@ -70,22 +70,6 @@ export class BrowserService {
       console.log("[JustAgram] Page loaded (loadstop):", url);
 
       if (data) {
-        // // Separate injected scripts from the data object to keep the page payload clean
-        // const { injectedScripts, ...pageData } = data;
-        //
-        // const dataScript = `window.__JUSTAGRAM_DATA__ = ${JSON.stringify(
-        //   pageData
-        // )};`;
-        // this.browser?.insertScript({ code: dataScript }, () => {
-        //   console.log("[JustAgram] Data injected successfully");
-        //
-        //   injectedScripts.forEach((script) => {
-        //     this.browser?.insertScript({ code: script }, () => {
-        //       console.log("[JustAgram] Injected script successfully");
-        //     });
-        //   });
-        // });
-
         this.injectData(data);
 
         // Inject scripts after data to ensure they can access it immediately
@@ -149,18 +133,18 @@ export class BrowserService {
   private static restart(): void {
     this.close();
     // Re-open with freshly loaded assets (or cached ones)
-    // AssetService.loadAssets().then((data) => {
-    //   this.open(data);
-    // });
+    AssetService.loadAssets().then((data) => {
+      this.open(data);
+    });
 
     // reload data and scripts
-    AssetService.loadAssets().then((data) => {
-      if (data) {
-        this.injectData(data);
-        data.injectedScripts.forEach((script: string) => {
-          this.injectScript(script);
-        });
-      }
-    });
+    // AssetService.loadAssets().then((data) => {
+    //   if (data) {
+    //     this.injectData(data);
+    //     data.injectedScripts.forEach((script: string) => {
+    //       this.injectScript(script);
+    //     });
+    //   }
+    // });
   }
 }

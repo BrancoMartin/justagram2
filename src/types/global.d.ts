@@ -45,6 +45,7 @@ declare global {
       };
     };
     JustagramBlocker: JustagramBlockerAPI;
+    JustagramDOMHandlers: Record<string, () => void>;
   }
 
   interface JustagramBlockerAPI {

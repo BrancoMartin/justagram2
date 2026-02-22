@@ -1,6 +1,7 @@
 import type { CSSRules, LoadedAssets, Settings } from "../../types";
 import { SettingsService } from "./SettingsService";
 import { AssetManifest } from "../generated/AssetManifest";
+import { AppVersion } from "../generated/Version";
 
 export class AssetService {
   public static async loadAssets(): Promise<LoadedAssets | null> {
@@ -31,10 +32,21 @@ export class AssetService {
         return { name: fileName, content: await res.text() };
       });
 
-      const [htmlFiles, scripts, cssFiles] = await Promise.all([
+      // Load Data Files
+      const dataPromises = ((AssetManifest as any).dataFiles || []).map(async (fileName: string) => {
+        const res = await fetch(`injected/data/${fileName}`);
+        if (!res.ok) {
+           console.warn(`[JustAgram] Failed to load data ${fileName}`);
+           return { name: fileName, content: {} };
+        }
+        return { name: fileName, content: await res.json() };
+      });
+
+      const [htmlFiles, scripts, cssFiles, dataFiles] = await Promise.all([
         Promise.all(htmlPromises),
         Promise.all(scriptPromises),
         Promise.all(cssPromises),
+        Promise.all(dataPromises),
       ]);
 
       // Map HTML to JustagramData properties
@@ -47,6 +59,8 @@ export class AssetService {
         const key = file.name.replace('.css', '') as keyof Settings;
         cssRules[key] = file.content;
       });
+      
+      const blockMap = dataFiles.find((f) => f.name === "blockmap.json")?.content || {};
 
       console.log("[JustAgram] Assets loaded successfully");
 
@@ -55,6 +69,8 @@ export class AssetService {
         menuHTML,
         cssRules,
         settings: SettingsService.load(),
+        blockMap,
+        version: AppVersion,
         injectedScripts: scripts,
       };
     } catch (e) {
