@@ -34,30 +34,19 @@ jobs:
           cd ios/App
           xcodebuild \
             -scheme App \
-            -archivePath build/App.xcarchive \
             -configuration Release \
             -sdk iphoneos \
+            -derivedDataPath build/DerivedData \
             -allowProvisioningUpdates \
-            -authenticationKeyPath $RUNNER_TEMP/key.p8 \
-            archive 2>&1 | tee build.log || true
-
-          # Si archive falla, hacer build simple para debug
-          if [ ! -d "build/App.xcarchive" ]; then
-            echo "Archive failed, attempting simple build..."
-            xcodebuild \
-              -scheme App \
-              -configuration Release \
-              -sdk iphoneos \
-              -derivedDataPath build/DerivedData \
-              build
-          fi
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            build 2>&1 | tee build.log
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: iOS-Build
+          name: iOS-Build-Unsigned
           path: |
-            ios/App/build/App.xcarchive
             ios/App/build/DerivedData/Build/Products
             ios/App/build.log
         if: always()
