@@ -1,0 +1,57 @@
+name: Build iOS App
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      - name: Install Bun
+        uses: oven-sh/setup-bun@v1
+
+      - name: Install Dependencies
+        run: bun install
+
+      - name: Build Web Assets
+        run: bun run build
+
+      - name: Sync iOS
+        run: npx cap sync ios
+
+      - name: Install CocoaPods
+        run: sudo gem install cocoapods
+
+      - name: Install iOS Pods
+        run: cd ios/App && pod install && cd ../../
+
+      - name: Build iOS App
+        run: |
+          cd ios/App
+          xcodebuild -scheme App \
+            -archivePath build/App.xcarchive \
+            -configuration Release \
+            -sdk iphoneos \
+            archive
+
+          xcodebuild \
+            -exportArchive \
+            -archivePath build/App.xcarchive \
+            -exportOptionsPlist ExportOptions.plist \
+            -exportPath build/Payload
+
+      - name: Upload IPA
+        uses: actions/upload-artifact@v3
+        with:
+          name: JustAgram.ipa
+          path: ios/App/build/Payload/*.ipa
