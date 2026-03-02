@@ -1,0 +1,22 @@
+{
+  "expo": {
+    "name": "JustAgram",
+    "slug": "justagram",
+    "version": "3.1.0",
+    "owner": "branco_a1",
+    "platforms": ["ios", "android"],
+    "ios": {
+      "bundleIdentifier": "com.justagram.app",
+      "buildNumber": "1"
+    },
+    "android": {
+      "package": "com.justagram.app",
+      "versionCode": 1
+    },
+    "extra": {
+      "eas": {
+        "projectId": "95c2283a-a3e5-4bcd-9fe1-cb96ecebece9"
+      }
+    }
+  }
+}
