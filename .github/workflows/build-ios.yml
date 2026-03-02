@@ -29,12 +29,6 @@ jobs:
       - name: Sync iOS
         run: npx cap sync ios
 
-      - name: Install CocoaPods
-        run: sudo gem install cocoapods
-
-      - name: Install iOS Pods
-        run: cd ios/App && pod install && cd ../../
-
       - name: Build iOS App
         run: |
           cd ios/App
